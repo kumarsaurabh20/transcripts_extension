@@ -28,6 +28,7 @@ class Itransmap
 		options.raw_reads = {}
 		options.algorithm = nil
 		options.outfile = nil
+		options.prefix = nil
 		options.vital = true
 		options.threads = 1
 
@@ -49,6 +50,11 @@ class Itransmap
 			opts.on('-r','--raw <pe_1,pe_2>','Paired end raw RNAseq data. The final R1 and R2 file are merged files (replicates and groups).') do |pe|
 					
 					reads = pe.split(',')
+
+					########################
+					#Check for file paths if on file names are provided then expand the names
+					########################
+
 					check = Utility.fileType(reads[0].to_s)
 					present = Utility.checkPermissions(reads[0].to_s)
 					present2 = Utility.checkPermissions(reads[1].to_s)
@@ -68,6 +74,9 @@ class Itransmap
 			opts.on('-o', '--outfile <String>', 'Final output fasta file with extended transcripts.') do |outfile|
 					options.outfile = outfile;	
 			end
+			opts.on('-p', '--prefix <String>', 'Database Prefix.') do |prefix|
+					options.outfile = prefix;	
+			end
 			opts.on('-t', '--num_threads <int>', 'Number of threads to run the program (Default: number of partial sequences equal to number of threads).') do |thread|
 					options.threads = thread;	
 			end
@@ -76,7 +85,7 @@ class Itransmap
       		opts.separator "Common options:"
       		opts.separator "---------------"
 
-			opts.on('-p', '--precheck', 'Use this option to check the availability of required tools in the system') do |precheck|
+			opts.on('-k', '--precheck', 'Use this option to check the availability of required tools in the system') do |precheck|
 				Utility.checkAndSetTools
 			end
 			opts.on_tail('-h', '--help', 'Displays help') do

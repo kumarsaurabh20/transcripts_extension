@@ -38,7 +38,12 @@ module Utility
 		end		
 	end
 
-	def Utility.unzip(file)
+	def Utility.unzip(file, dir, locate)
+
+		temp = makeDir(dir, locate)
+		Dir.chdir(temp)
+		raise "Error while moving to database directory!!" unless Dir.pwd.eql?(db)
+
 		cmd = "gzip -d #{file}"
 		%x[ #{cmd} ]
 		if $?.exitstatus == 0
@@ -65,14 +70,51 @@ module Utility
 			if $?.exitstatus == 0
 				puts "FastA generated!"
 			else
-				raise BadRunError, "Error: Oops. Can not run the shell command!"
+				raise BadRunError, "Error: Oops..Bad command execution!"
 			end	 	  			
+		end	
+	end	
+
+	#http://code.tutsplus.com/tutorials/ruby-for-newbies-working-with-directories-and-files--net-18810
+	def makeDir(dir, locate)
+		temp = ""
+		home = File.join(File.dirname(__FILE__), locate)
+		contents = Dir.entries(home)
+		count = contents.count(dir)
+		
+		if File.directory?(dir)
+			tempname = dir."_#{count + 1}"
+			temp = File.expand_path(Dir.mkdir(File.join(home, tempname), 0700))
+			return temp
+		else	
+			temp = File.expand_path(Dir.mkdir(File.join(home, dir), 0700))
+			return temp
+		end		
+	end	
+
+	#Multiple arguments
+	#http://stackoverflow.com/questions/831077/how-do-i-pass-multiple-arguments-to-a-ruby-method-as-an-array
+
+	def createDbFasta(prefix, array)
+		if array.is_a?(Array)
+			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
+			`#{cmd}`
+			if $?.exitstatus == 0
+				puts "FastA Merged!"
+			else
+				raise BadRunError, "Error: Oops..Bad command execution!"
+			end	 	 
+
+		else 
+			raise "Expected Array Value to create a final fasta file!"	
 		end	
 	end	
 
 	def expunge(file)
 
 	end	
+
+	
 
 
 
