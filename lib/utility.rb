@@ -1,10 +1,13 @@
 #!/usr/bin/ruby
 
 require 'prerequisite'
+require 'pathname'
+require 'fileutils'
 
 module Utility
 
 	BadRunError=Class.new(Exception)
+		
 
 	# Check and set path to all the required tools and software
 	#Use prerequisite shell script
@@ -38,12 +41,22 @@ module Utility
 		end		
 	end
 
-	def Utility.unzip(file, dir, locate)
+	def self.navigate(folder)
+		setpath = self.setDir
+		FileUtils.cd(setpath)
+		if File.directory?(folder)
+			FileUtils.cd(File.join(setpath, folder))
+			puts "Current working directory is moved to #{folder}"
+		else
+			puts "ERROR::Data folder is not found!"
+			puts "If Data folder is not available, create a folder and name it Data and dump all your raw data files!"
+			exit
+		end				
+	end
 
-		temp = makeDir(dir, locate)
-		Dir.chdir(temp)
-		raise "Error while moving to database directory!!" unless Dir.pwd.eql?(db)
-
+	def Utility.unzip(file, dir)		
+		self.navigate(dir)
+		#raise "Error while moving to database directory!!" unless Dir.pwd.eql?(setpath)
 		cmd = "gzip -d #{file}"
 		%x[ #{cmd} ]
 		if $?.exitstatus == 0
@@ -60,7 +73,7 @@ module Utility
 		return count
 	end
 
-	def convertQ2A(file)
+	def Utility.convertQ2A(file)
 		name = File.basename(file, ".*")
 		if name.empty?
 			puts "Error::FastQ File not found!"
@@ -76,26 +89,29 @@ module Utility
 	end	
 
 	#http://code.tutsplus.com/tutorials/ruby-for-newbies-working-with-directories-and-files--net-18810
-	def makeDir(dir, locate)
-		temp = ""
-		home = File.join(File.dirname(__FILE__), locate)
-		contents = Dir.entries(home)
-		count = contents.count(dir)
-		
+	def self.makeDir(dir)
+		setpath = self.setDir
+		FileUtils.cd(setpath)
+		self.checkDirAtRootAndMake(dir)
+		return true	
+	end
+
+	def self.checkDirAtRootAndMake(dir)
 		if File.directory?(dir)
-			tempname = dir."_#{count + 1}"
-			temp = File.expand_path(Dir.mkdir(File.join(home, tempname), 0700))
-			return temp
+			FileUtils.rm_rf(dir)
+			FileUtils.mkdir dir
+			return true
 		else	
-			temp = File.expand_path(Dir.mkdir(File.join(home, dir), 0700))
-			return temp
-		end		
+			FileUtils.mkdir dir
+			return true
+		end	
 	end	
 
 	#Multiple arguments
 	#http://stackoverflow.com/questions/831077/how-do-i-pass-multiple-arguments-to-a-ruby-method-as-an-array
 
-	def createDbFasta(prefix, array)
+	def Utility.createDbFasta(prefix, array)
+		self.makeDir("DB")		
 		if array.is_a?(Array)
 			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
 			`#{cmd}`
@@ -110,12 +126,48 @@ module Utility
 		end	
 	end	
 
-	def expunge(file)
+	def Utility.expunge(file)
 
+	end
+
+	def self.setDir
+		checkPath = File.expand_path("../../init.rb", __FILE__)
+		return File.dirname(checkPath)
+	end
+
+	def Utility.directory_exists?(dir)
+		self.setDir
+		if File.directory?(dir)
+			self.navigate(dir)
+		else
+			puts "#{dir} does not exist. Check again!"
+		end	
+	end
+
+	def Utility.runCommand(cmd, args, output)
+		puts "got #{cmd} and #{args.join(',')}"
 	end	
 
-	
+	def Utility.moveFilesToTmp(args)
+		
+		args.each do |file|
+			
+			path = File.expand_path("../../", file)
+			self.createDir("tmp")
+			
+			#FileUtils.mv 'stuff.rb', '/notexist/lib/ruby', :force => true  # no error 
+			FileUtils.mv file, File.join(path, "tmp"), :force => true
 
+			return true
+		end
+	end
+
+	def self.createDir(dir)
+		path = File.expand_path("../../", __FILE__)
+		FileUtils.cd(path)
+		FileUtils.mkdir dir, :mode => 0777
+		return true
+	end	
 
 
 	# check whether the necessary perl scripts exist and cand be found
