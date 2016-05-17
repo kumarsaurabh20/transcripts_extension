@@ -62,18 +62,18 @@ class Createdbs
 
 	end	
 
-	def useBlast(dir, partials ,threads, prefix)
+	def useBlast(dir, partial ,threads, prefix)
 		
 		count = 0
 		if threads == 0
-			count = Utility.countSeq(partials)
+			count = Utility.countSeq(partial)
 		else
 			count = threads
 		end	
 
 		#blastn -query partials.fasta -db R1 -out blastn_out_R1.tab -outfmt 6 -max_target_seqs 50000 -num_threads 25
 		if Utility.directory_exists?("DB")
-			cmd = "blastn -query #{partials}.fasta -db #{prefix} -out #{prefix}.out -outfmt 6 -max_target_seqs 50000 -num_threads #{count}"
+			cmd = "blastn -query #{partial}.fasta -db #{prefix} -out #{prefix}.out -outfmt 6 -max_target_seqs 50000 -num_threads #{count}"
 			puts "Executing blast search...."
 			`#{cmd} 1> /dev/null 2> /dev/null`
 			if $?.exitstatus == 0
@@ -88,18 +88,18 @@ class Createdbs
 		
 	end	
 
-	def useNhmmer(partials, prefix, threads)
+	def useNhmmer(partial, prefix, threads)
 		
 		count = 0
 		if threads == 0
-			count = Utility.countSeq(partials)
+			count = Utility.countSeq(partial)
 		else
 			count = threads
 		end	
 
 		#nhmmer --tblout pacbio_nillu_hmmer.blastout --noali --incE 0.0001 -E 0.001 --max --dna --cpu 16 ER1_vF_CYP6ER1vR1.fasta 8830_1_2_3_4_5_merged.fasta
 		if Utility.directory_exists?("DB")
-			cmd = "nhmmer --tblout #{prefix}.out --noali --incE 0.001 -E 0.001 --max --dna --cpu #{count} #{partials}.fasta #{prefix}.fasta"
+			cmd = "nhmmer --tblout #{prefix}.out --noali --incE 0.001 -E 0.001 --max --dna --cpu #{count} #{partial}.fasta #{prefix}.fasta"
 			puts "Executing nhmmer search...."
 			`#{cmd} 1> /dev/null 2> /dev/null`
 			if $?.exitstatus == 0

@@ -21,15 +21,19 @@ module Utility
 	# check the write permission of $workDir before building of the work directory
 	def Utility.checkPermissions(file)
 		#path = File.absolute_Path(file)
+		
 		if File.exist?(file) && File.executable?(file)
 			return true
 		else
 			return false
-		end			
+		end	
+
 	end
 
 	def Utility.fileType(file)	
+		
 		ex = File.extname(file)
+		
 		if ex.eql?(".fasta") || ex.eql?(".fa") || ex.eql?(".fsa")
 			return "fasta"
 		elsif ex.eql?(".gz")
@@ -38,12 +42,16 @@ module Utility
 			return "fastq"
 		else
 			return "other"
-		end		
+		end
+
 	end
 
 	def self.navigate(folder)
+		
 		setpath = self.setDir
+		
 		FileUtils.cd(setpath)
+		
 		if File.directory?(folder)
 			FileUtils.cd(File.join(setpath, folder))
 			puts "Current working directory is moved to #{folder}"
@@ -51,30 +59,39 @@ module Utility
 			puts "ERROR::Data folder is not found!"
 			puts "If Data folder is not available, create a folder and name it Data and dump all your raw data files!"
 			exit
-		end				
+		end
+
 	end
 
 	def Utility.unzip(file, dir)		
+		
 		self.navigate(dir)
 		#raise "Error while moving to database directory!!" unless Dir.pwd.eql?(setpath)
 		cmd = "gzip -d #{file}"
 		%x[ #{cmd} ]
+		
 		if $?.exitstatus == 0
 			return true
 		else
 			raise BadRunError, "Error: Oops. Can not run the shell command!"
-		end	
+		end
+
 	end	
 
 	# check whether fasta file exist and how many sequences it contains
 	def Utility.countSeq(file)
+		
 		cmd = "grep -c '^>' #{file}"
+		
 		count = `#{cmd}`
+		
 		return count
 	end
 
 	def Utility.convertQ2A(file)
+		
 		name = File.basename(file, ".*")
+		
 		if name.empty?
 			puts "Error::FastQ File not found!"
 		else
@@ -85,33 +102,45 @@ module Utility
 			else
 				raise BadRunError, "Error: Oops..Bad command execution!"
 			end	 	  			
-		end	
+		end
+
 	end	
 
 	#http://code.tutsplus.com/tutorials/ruby-for-newbies-working-with-directories-and-files--net-18810
 	def self.makeDir(dir)
+		
 		setpath = self.setDir
+		
 		FileUtils.cd(setpath)
+		
 		self.checkDirAtRootAndMake(dir)
+		
 		return true	
 	end
 
 	def self.checkDirAtRootAndMake(dir)
+		
 		if File.directory?(dir)
+			
 			FileUtils.rm_rf(dir)
+			
 			FileUtils.mkdir dir
+			
 			return true
 		else	
 			FileUtils.mkdir dir
 			return true
 		end	
+
 	end	
 
 	#Multiple arguments
 	#http://stackoverflow.com/questions/831077/how-do-i-pass-multiple-arguments-to-a-ruby-method-as-an-array
 
 	def Utility.createDbFasta(prefix, array)
+		
 		self.makeDir("DB")		
+		
 		if array.is_a?(Array)
 			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
 			`#{cmd}`
@@ -123,7 +152,8 @@ module Utility
 
 		else 
 			raise "Expected Array Value to create a final fasta file!"	
-		end	
+		end
+
 	end	
 
 	def Utility.expunge(file)
@@ -131,12 +161,16 @@ module Utility
 	end
 
 	def self.setDir
+		
 		checkPath = File.expand_path("../../init.rb", __FILE__)
+		
 		return File.dirname(checkPath)
 	end
 
 	def Utility.directory_exists?(dir)
+		
 		self.setDir
+		
 		if File.directory?(dir)
 			self.navigate(dir)
 		else
@@ -163,10 +197,24 @@ module Utility
 	end
 
 	def self.createDir(dir)
+		
 		path = File.expand_path("../../", __FILE__)
 		FileUtils.cd(path)
 		FileUtils.mkdir dir, :mode => 0777
+		
 		return true
+	end	
+
+	def Utility.executeCmd(cmd)
+
+		`#{cmd} 1> /dev/null 2> /dev/null`	if cmd.is_a?(String)
+			
+		if $?.exitstatus == 0
+			return true
+		else
+			raise BadRunError, "Error: Oops..Bad command execution!"
+		end		
+
 	end	
 
 
