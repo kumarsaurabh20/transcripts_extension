@@ -3,10 +3,9 @@
 require 'prerequisite'
 require 'pathname'
 require 'fileutils'
+require 'avail'
 
 module Utility
-
-	BadRunError=Class.new(Exception)
 		
 
 	# Check and set path to all the required tools and software
@@ -17,6 +16,29 @@ module Utility
 		check.checkTools
 		exit
 	end	
+
+	# def Utility.createDatabase
+
+	# 	files = Dir.glob("*.fastq.gz")
+	# 	if files.is_a?(Array) and !files.empty?
+
+	# 		Utility.mergeZippedFiles(files[0], files[1])
+
+	# 		Utility.convertQ2A(file)
+	# end	
+
+	def Utility.createDbFasta(prefix, array)
+		
+		Avail.makeDir("DB")		
+		
+		if array.is_a?(Array)
+			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
+			Avail.executeCmd(cmd) 
+		else 
+			raise "Expected Array Value to create a final fasta file!"	
+		end
+
+	end
 
 	# check the write permission of $workDir before building of the work directory
 	def Utility.checkPermissions(file)
@@ -46,14 +68,15 @@ module Utility
 
 	end
 
-	def self.navigate(folder)
+	def Utility.navigate(folder)
 		
-		setpath = self.setDir
-		
+		temp = ""
+		setpath = Avail.setDir
 		FileUtils.cd(setpath)
 		
 		if File.directory?(folder)
-			FileUtils.cd(File.join(setpath, folder))
+			temp = File.join(setpath, folder)
+			FileUtils.cd(temp)
 			puts "Current working directory is moved to #{folder}"
 		else
 			puts "ERROR::Data folder is not found!"
@@ -61,21 +84,29 @@ module Utility
 			exit
 		end
 
+		return temp
+
 	end
 
-	def Utility.unzip(file, dir)		
-		
-		self.navigate(dir)
+	def Utility.mergeZippedFiles(file1, file2, prefix)
+		r1 = File.expand_path(file1)
+		puts r1.to_s
+		r2 = File.expand_path(file2)
+		puts r2.to_s
+		name = File.basename(file1, "*.fastq.gz")
+		outfile = "#{prefix}_merged.fastq"
+		cmd = "zcat #{r1} #{r2} > #{outfile}"
+		puts "Merging zipped fastq files!"
+		Avail.executeCmd(cmd)
+		puts "This is the ourput of mergeZipped method #{outfile}"
+		return outfile
+	end	
+
+	def Utility.unzip(file)		
+		#Avail.navigate(dir)
 		#raise "Error while moving to database directory!!" unless Dir.pwd.eql?(setpath)
 		cmd = "gzip -d #{file}"
-		%x[ #{cmd} ]
-		
-		if $?.exitstatus == 0
-			return true
-		else
-			raise BadRunError, "Error: Oops. Can not run the shell command!"
-		end
-
+		Avail.executeCmd(cmd)
 	end	
 
 	# check whether fasta file exist and how many sequences it contains
@@ -88,106 +119,58 @@ module Utility
 		return count
 	end
 
-	def Utility.convertQ2A(file)
+	def Utility.convertQ2A(file, prefix)
 		
 		name = File.basename(file, ".*")
+		outfile = "#{name}.fasta"
 		
 		if name.empty?
+		
 			puts "Error::FastQ File not found!"
+		
 		else
-			cmd = "seqtk seq -A #{file} > #{name}.fasta"
-			`#{cmd}`
-			if $?.exitstatus == 0
-				puts "FastA generated!"
+			
+			if defined? prefix
+				cmd = "seqtk seq -A #{file} > #{prefix}.fasta"
+				Avail.executeCmd(cmd)			
+				return "#{prefix}.fasta"
 			else
-				raise BadRunError, "Error: Oops..Bad command execution!"
-			end	 	  			
-		end
-
-	end	
-
-	#http://code.tutsplus.com/tutorials/ruby-for-newbies-working-with-directories-and-files--net-18810
-	def self.makeDir(dir)
-		
-		setpath = self.setDir
-		
-		FileUtils.cd(setpath)
-		
-		self.checkDirAtRootAndMake(dir)
-		
-		return true	
-	end
-
-	def self.checkDirAtRootAndMake(dir)
-		
-		if File.directory?(dir)
-			
-			FileUtils.rm_rf(dir)
-			
-			FileUtils.mkdir dir
-			
-			return true
-		else	
-			FileUtils.mkdir dir
-			return true
+				cmd = "seqtk seq -A #{file} > #{outfile}"
+				Avail.executeCmd(cmd)	
+				return "#{outfile}.fasta"
+			end
 		end	
 
 	end	
 
-	#Multiple arguments
-	#http://stackoverflow.com/questions/831077/how-do-i-pass-multiple-arguments-to-a-ruby-method-as-an-array
-
-	def Utility.createDbFasta(prefix, array)
-		
-		self.makeDir("DB")		
-		
-		if array.is_a?(Array)
-			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
-			`#{cmd}`
-			if $?.exitstatus == 0
-				puts "FastA Merged!"
-			else
-				raise BadRunError, "Error: Oops..Bad command execution!"
-			end	 	 
-
-		else 
-			raise "Expected Array Value to create a final fasta file!"	
-		end
-
-	end	
-
-	def Utility.expunge(file)
-
-	end
-
-	def self.setDir
-		
-		checkPath = File.expand_path("../../init.rb", __FILE__)
-		
-		return File.dirname(checkPath)
-	end
-
 	def Utility.directory_exists?(dir)
 		
-		self.setDir
+		Avail.setDir
 		
 		if File.directory?(dir)
-			self.navigate(dir)
+			Avail.navigate(dir)
 		else
 			puts "#{dir} does not exist. Check again!"
 		end	
 	end
 
-	def Utility.runCommand(cmd, args, output)
-		puts "got #{cmd} and #{args.join(',')}"
+	def Utility.checkFileExist(file)
+
+		if File.exist?(file) and File.executable?(file)
+			return true
+		else
+			return false
+		end		
+
 	end	
+
 
 	def Utility.moveFilesToTmp(args)
 		
 		args.each do |file|
 			
 			path = File.expand_path("../../", file)
-			self.createDir("tmp")
+			Avail.createDir("tmp")
 			
 			#FileUtils.mv 'stuff.rb', '/notexist/lib/ruby', :force => true  # no error 
 			FileUtils.mv file, File.join(path, "tmp"), :force => true
@@ -196,27 +179,7 @@ module Utility
 		end
 	end
 
-	def self.createDir(dir)
 		
-		path = File.expand_path("../../", __FILE__)
-		FileUtils.cd(path)
-		FileUtils.mkdir dir, :mode => 0777
-		
-		return true
-	end	
-
-	def Utility.executeCmd(cmd)
-
-		`#{cmd} 1> /dev/null 2> /dev/null`	if cmd.is_a?(String)
-			
-		if $?.exitstatus == 0
-			return true
-		else
-			raise BadRunError, "Error: Oops..Bad command execution!"
-		end		
-
-	end	
-
 
 	# check whether the necessary perl scripts exist and cand be found
 

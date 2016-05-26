@@ -3,7 +3,13 @@
 require 'fileutils'
 require 'utility'
 
-class Testdir
+module Testdir
+
+	def Testdir.name
+
+	end
+	
+	d	
 
 	
 

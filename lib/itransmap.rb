@@ -4,6 +4,7 @@ require 'utility'
 require 'optparse'
 require 'optparse/time'
 require 'ostruct'
+require 'createAndQueryDb'
 
 class Itransmap
 
@@ -46,7 +47,8 @@ class Itransmap
 						puts "Error::Check the partial file type!"
 						exit
 					end		
-			end	
+			end
+
 			opts.on('-r','--raw <pe_1,pe_2>','Paired end raw RNAseq data. The final R1 and R2 file are merged files (replicates and groups).') do |pe|
 					
 					reads = pe.split(',')
@@ -59,24 +61,28 @@ class Itransmap
 					present = Utility.checkPermissions(reads[0].to_s)
 					present2 = Utility.checkPermissions(reads[1].to_s)
 
-					if check.eql?("zipped") && present == true && present2 == true
+					if check.eql?("zipped") and present == true and present2 == true
 						options.raw_reads[:pe_1] = reads[0];
 						options.raw_reads[:pe_2] = reads[1];
 					else
-						puts "Error::Either the file is not gz compressed or the files are not available!"
+						puts "Error::The raw read files are either not gz compressed or the files are not available!"
 						exit
 					end		
 					#Utility.checkPermissions					
 			end
+
 			opts.on('-a', '--algorithm <blast|hmmer>', 'Search algorithm (blast for faster searches and hmmer for a sensitive search).') do |algorithm|
 					options.algorithm = algorithm;	
 			end
+
 			opts.on('-o', '--outfile <String>', 'Final output fasta file with extended transcripts.') do |outfile|
 					options.outfile = outfile;	
 			end
+
 			opts.on('-p', '--prefix <String>', 'Database Prefix.') do |prefix|
 					options.outfile = prefix;	
 			end
+
 			opts.on('-t', '--num_threads <int>', 'Number of threads to run the program (Default: number of partial sequences equal to number of threads).') do |thread|
 					options.threads = thread;	
 			end
@@ -85,29 +91,44 @@ class Itransmap
       		opts.separator "Common options:"
       		opts.separator "---------------"
 
-			opts.on('-k', '--precheck', 'Use this option to check the availability of required tools in the system') do |precheck|
-				Utility.checkAndSetTools
-			end
-			opts.on_tail('-h', '--help', 'Displays help') do
+			opts.on_tail('-h', '--help', 'Displays help') do |help|
 		        puts opts
+		        puts " "
 		        exit
 		    end
-		    opts.on_tail('-v', '--version', 'Show version') do
+
+			opts.on_tail('-k', '--precheck', 'Use this option to check the availability of required tools in the system') do |precheck|
+				Utility.checkAndSetTools
+				exit
+			end
+
+			opts.on_tail('-d', '--database <database_prefix>', 'Use this option to create blast and hmmer database') do |prefix|
+				create = CreateAndQueryDb.new
+				create.formatReadFiles(prefix)
+				exit
+			end
+			
+		    opts.on_tail('-v', '--version', 'Show version') do |version|
 		        puts "iTransMap: version #{VERSION}"
 		        exit
 		    end
-		    opts.on_tail('-i', '--info', 'Display tool information') do
+
+		    opts.on_tail('-i', '--info', 'Display tool information') do |info|
 		        Utility.intro
 		        exit
 		    end
-		    opts.on_tail('-c', '--copyright', 'Display copyright information') do
+
+		    opts.on_tail('-c', '--copyright', 'Display copyright information') do |copyright|
 		        Utility.copyright
 		        exit
 		    end
-		    opts.on(' ', ' ', '') do
+
+		    opts.on(' ', ' ', '') do |nothing|
 				puts opts
+				puts " "
 		        exit
-			end	
+			end
+
 		# options specifications go here
 			#f !args
 			#		opts.on_tail('-h', '--help', 'Displays help') do
