@@ -6,14 +6,23 @@ require 'fileutils'
 require 'avail'
 
 module Utility
+
+	APP_ROOT = File.expand_path("../../", __FILE__) 
+	@step=Time.new
 		
+
+	class BadFileError < StandardError
+    end
 
 	# Check and set path to all the required tools and software
 	#Use prerequisite shell script
 	# find out if some programmes are not installed.
 	def Utility.checkAndSetTools
+		
 		check = Prerequisite.new
+		
 		check.checkTools
+		
 		exit
 	end	
 
@@ -32,22 +41,30 @@ module Utility
 		Avail.makeDir("DB")		
 		
 		if array.is_a?(Array)
+			
 			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
+			
 			Avail.executeCmd(cmd) 
+		
 		else 
+			
 			raise "Expected Array Value to create a final fasta file!"	
+		
 		end
 
 	end
 
 	# check the write permission of $workDir before building of the work directory
 	def Utility.checkPermissions(file)
-		#path = File.absolute_Path(file)
 		
 		if File.exist?(file) && File.executable?(file)
+		
 			return true
+		
 		else
+		
 			return false
+		
 		end	
 
 	end
@@ -57,13 +74,21 @@ module Utility
 		ex = File.extname(file)
 		
 		if ex.eql?(".fasta") || ex.eql?(".fa") || ex.eql?(".fsa")
+			
 			return "fasta"
+		
 		elsif ex.eql?(".gz")
+			
 			return "zipped"
+		
 		elsif ex.eql?(".fastq")
+			
 			return "fastq"
+		
 		else
+			
 			return "other"
+		
 		end
 
 	end
@@ -75,13 +100,21 @@ module Utility
 		FileUtils.cd(setpath)
 		
 		if File.directory?(folder)
+
 			temp = File.join(setpath, folder)
+			
 			FileUtils.cd(temp)
-			puts "Current working directory is moved to #{folder}"
+			
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Current working directory is moved to #{folder}"
+		
 		else
-			puts "ERROR::Data folder is not found!"
-			puts "If Data folder is not available, create a folder and name it Data and dump all your raw data files!"
+			
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Data folder is not found!"
+			
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  If Data folder is not available, create a folder and name it Data and dump all your raw data files!"
+			
 			exit
+		
 		end
 
 		return temp
@@ -89,23 +122,36 @@ module Utility
 	end
 
 	def Utility.mergeZippedFiles(file1, file2, prefix)
+
 		r1 = File.expand_path(file1)
+		
 		puts r1.to_s
+		
 		r2 = File.expand_path(file2)
+		
 		puts r2.to_s
+		
 		name = File.basename(file1, "*.fastq.gz")
+		
 		outfile = "#{prefix}_merged.fastq"
+		
 		cmd = "zcat #{r1} #{r2} > #{outfile}"
-		puts "Merging zipped fastq files!"
+		
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Merging zipped fastq files!"
+		
 		Avail.executeCmd(cmd)
-		puts "This is the ourput of mergeZipped method #{outfile}"
+		
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  This is the ourput of mergeZipped method #{outfile}"
+		
 		return outfile
+
 	end	
 
 	def Utility.unzip(file)		
 		#Avail.navigate(dir)
 		#raise "Error while moving to database directory!!" unless Dir.pwd.eql?(setpath)
 		cmd = "gzip -d #{file}"
+		
 		Avail.executeCmd(cmd)
 	end	
 
@@ -126,19 +172,28 @@ module Utility
 		
 		if name.empty?
 		
-			puts "Error::FastQ File not found!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Error::FastQ File not found!"
 		
 		else
 			
 			if defined? prefix
+				
 				cmd = "seqtk seq -A #{file} > #{prefix}.fasta"
+				
 				Avail.executeCmd(cmd)			
+				
 				return "#{prefix}.fasta"
+			
 			else
+				
 				cmd = "seqtk seq -A #{file} > #{outfile}"
+				
 				Avail.executeCmd(cmd)	
+				
 				return "#{outfile}.fasta"
+			
 			end
+		
 		end	
 
 	end	
@@ -150,7 +205,7 @@ module Utility
 		if File.directory?(dir)
 			Avail.navigate(dir)
 		else
-			puts "#{dir} does not exist. Check again!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{dir} does not exist. Check again!"
 		end	
 	end
 
@@ -165,24 +220,180 @@ module Utility
 	end	
 
 
-	def Utility.moveFilesToTmp(args)
+	def Utility.createAndMoveFiles(file, ext, dir)
 		
-		args.each do |file|
-			
-			path = File.expand_path("../../", file)
-			Avail.createDir("tmp")
-			
-			#FileUtils.mv 'stuff.rb', '/notexist/lib/ruby', :force => true  # no error 
-			FileUtils.mv file, File.join(path, "tmp"), :force => true
+		#fileBasename = File.basename(File.expand_path(file), ".*")
+		dirname = File.join("#{APP_ROOT}", dir, file)
 
-			return true
-		end
+		if Dir.exist? dirname
+			#File.basename("/home/gumby/work/ruby.rb", ".*")    #=> "ruby"		
+			#FileUtils.mv 'stuff.rb', '/notexist/lib/ruby', :force => true  # no error 
+			temp = File.expand_path("#{file}.#{ext}", "#{APP_ROOT}/DB")
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Transferring file #{temp}"
+			FileUtils.mv temp, dirname, :force => true
+			
+		else
+			Avail.createDir(dir, file)
+			temp = File.expand_path("#{file}.#{ext}", "#{APP_ROOT}/DB")
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Transferring file #{temp}"
+			FileUtils.mv temp, dirname, :force => true
+		end	
+
+		
+		
+		
 	end
 
+	def Utility.writeFile(outputFile, seqObject, headerPrefix)
 		
+		File.open(outputFile.to_s, 'a') do |file|
+		
+			seqObject.each_with_index do |element, index|
+			
+				file.write ">#{headerPrefix}#{index}\n#{element}\n"
+			
+			end	
+		
+		end
+
+	end
+
+	def Utility.readSingleFasta(inputFile)
+		
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Reading fasta file..."
+		sequence = ""
+		header = ""
+
+		File.open(inputFile.to_s, "r") do |f|
+	  		
+	  		f.each_line do |line|
+
+	  			if line.match('>')
+
+	  				header = line.chomp
+
+	  			else
+
+	  				sequence.concat(line.chomp)
+
+	  			end	
+	  		end
+		end
+
+		return header, sequence
+
+	end
+
+	def Utility.splitFasta(input)
+		
+		temp = Array.new
+
+		File.open(input.to_s, "r") do |file|
+
+			header = Array.new	
+
+			file.each_line do |line|				
+
+				if line.include? ">"
+					
+					temp << line.split(" ")[0].tr(">", "")
+
+					header = line.split(" ")
+
+					Avail.fileCreate(header, line)
+
+				else	
+					
+					Avail.fileCreate(header, line)
+				
+				end	
+
+			end	
+
+		end	
+
+		return temp
+
+	end	
+
+	def Utility.getPartialContigs(input, size)
+
+		filterList = {}
+		header = []
+		sequence = ""
+
+		File.open(input.to_s, "r")  do |file|
+			
+			file.each_line do |line|
+
+				if header.empty? && line.start_with?(">")
+					header = line.split(" ")[0]
+					#puts "this is line 1"
+					#puts line.to_s
+					
+				elsif !header.empty? && line.start_with?(">") && !file.eof?
+
+						if !sequence.empty? && sequence.size <= size
+								
+								#puts sequence
+								
+								filterList["#{header}"] = sequence
+								#puts filterList.to_s
+								#puts "hash is just filled with #{line.chomp}"
+
+								header = line.split(" ")[0]
+								#puts "new header #{header} is created"
+								
+								sequence = ""				
+
+						end	
+				
+				else 					
+					sequence.concat(line.chomp)
+					#puts "sequence is just filled with #{line.chomp}"
+					filterList["#{header}"] = sequence if file.eof? && sequence.size <= size			
+				end		
+
+			end	
+
+		end		
+		#puts filterList.to_s
+		Avail.writeFile("FilteredByLength.fasta", filterList)	
+
+	end
 
 	# check whether the necessary perl scripts exist and cand be found
 
+	def Utility.runRscript(scriptFile)
+
+		raise BadFileError, "ERROR::Either the file is not available or the file is not executable!" if !File.exist?(scriptFile) and !File.executable?(scriptFile)
+		
+		cmd="R --vanilla -q < #{scriptFile}"
+		
+		Avail.executeCmd(cmd)
+
+	end	
+
+	def Utility.getSequenceLength(file)
+
+		data = Hash.new
+		header=""
+		len=nil
+
+		 File.open(file.to_s, "r") do |file|
+		 	
+		 	file.each_line do |line|
+		 		if line.include?(">")
+		 			header = line
+		 			next
+		 		else
+		 			len = line.length
+		 		end	
+		 		data[header] = len
+		 	end	
+		 end
+		 return data	
+	end	
 
 	def Utility.intro 
 		puts "							" 

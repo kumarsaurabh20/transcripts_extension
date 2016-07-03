@@ -103,8 +103,8 @@ class Itransmap
 			end
 
 			opts.on_tail('-d', '--database <database_prefix>', 'Use this option to create blast and hmmer database') do |prefix|
-				create = CreateAndQueryDb.new
-				create.formatReadFiles(prefix)
+				create = CreateAndQueryDb.new(prefix)
+				create.formatReadFiles("partials.fasta", "blast")
 				exit
 			end
 			

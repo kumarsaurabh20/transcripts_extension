@@ -2,12 +2,25 @@
 require 'utility'
 require 'fileutils'
 require 'avail'
+require 'sequence'
+require 'querydb'
 
 class CreateAndQueryDb
 
 	BadRunError=Class.new(Exception)
+	ArgumentError=Class.new(StandardError)
+	NoMethodError=Class.new(NameError)
+	
 
-	def formatReadFiles(prefix)
+
+	attr_accessor :prefix, :step	
+
+	def initialize(prefix)
+    	 @prefix = prefix
+    	 @step=Time.new
+ 	end
+
+	def formatReadFiles(partials, searchAlgo)
 
 		outfasta = ""
 		
@@ -16,48 +29,30 @@ class CreateAndQueryDb
 			currentPath = Utility.navigate("Sample_data")
 
 			files = Dir.glob("*.fastq.gz")
-			puts files.inspect
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{files.inspect}" 
 			
 			if files.is_a?(Array) and files.size == 2
 
-				puts "#{files.inspect} is an array!"
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{files.inspect} is an array!"
 
-				outfastq = Utility.mergeZippedFiles(files[0].to_s, files[1].to_s, prefix)
-				puts outfastq.to_s
-				puts "Converting from FASTQ to FASTA..."
-				outfasta = Utility.convertQ2A(outfastq, prefix)
-				puts "Files are reformatted to FASTA!"
-				puts outfasta.to_s
-				Avail.createDir("DB")
+				outfastq = Utility.mergeZippedFiles(files[0].to_s, files[1].to_s, @prefix)
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{outfastq.to_s}"
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Converting from FASTQ to FASTA..."
+				outfasta = Utility.convertQ2A(outfastq, @prefix)
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Files are reformatted to FASTA!"
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{outfasta.to_s}"
+				Avail.createDir(nil, "DB")
 				Avail.moveFile(currentPath, "DB", outfasta)
 			else
 
-				puts "ERROR::Data files could not be found!"
+				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Data files could not be found!"
 			
 			end	
 
-			# if file.is_a?(Hash)
-			# 	file.each do |value|
-			# 		name = File.basename(value, ".*")
-					
-			# 		if Utility.unzip(value, "data")
-						
-			# 			puts "Decompressiong #{value}..."
-			# 			temp = File.join(name, ".fastq")
-			# 			Utility.convertQ2A(temp)
-
-			# 		else
-			# 			puts "ERROR::Oops..something terrible happened while unzipping the file!"
-			# 			exit	
-			# 		end							
-			# 	end	
-			# else
-			# 	Puts "WARNING::Input file is not paired!"
-			# end	
 		rescue Exception => e
 
 			e.backtrace
-			puts "ERROR::Something bad happened!!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Something bad happened!!"
 			exit
 		
 		end
@@ -67,52 +62,70 @@ class CreateAndQueryDb
 		if Utility.checkFileExist(outfasta)
 
 			name = File.basename(outfasta, ".*")
-			createDbA(outfasta, prefix)
+			createDbA(outfasta)
 					
 		else
 			
-			puts "ERROR::Cannot move merged fasta file to DB folder!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Cannot move merged fasta file to DB folder!"
 			exit
 		
 		end
 
-		createDbB(prefix)
+		createDbB
+
+		query = Querydb.new(@prefix)
+
+		if searchAlgo.eql?("blast")
+
+			query.useBlast("DB", partials)
+
+		elsif searchAlgo.eql?("nhmmer")	
+			
+			query.useNhmmer("DB", partials)
+
+		else
+
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Please enter the search algorithm!"
+			raise ArgumentError
+
+		end	
 
 	end	
 
-	def createDbA(file, prefix)
+	def createDbA(file)
 
 		name = File.basename(file, ".*")
 		
 		if Utility.checkFileExist(file)
 
-			puts "Creating BLAST DB of raw sequence reads...."
-			puts "Check blast log file for detail BLAST DB description!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Creating BLAST DB of raw sequence reads...."
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Check blast log file for detail BLAST DB description!"
 
-			cmd = "makeblastdb -in #{prefix}.fasta -input_type fasta -dbtype nucl -title #{prefix} -out #{prefix} -logfile #{prefix}.log"
+			cmd = "makeblastdb -in #{@prefix}.fasta -input_type fasta -dbtype nucl -title #{@prefix} -out #{@prefix} -logfile #{@prefix}.log"
 			Avail.executeCmd(cmd)
 			#Avail.executeCmd("cat #{prefix}.log")	
 		
 		else
 			
-			puts "ERROR::Database directory does not exist!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Database directory does not exist!"
 			exit
 		
 		end		
 
 		puts " "
 		puts "-------------------------------"
-		puts "Database A successfully created"
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Database A successfully created"
 		puts "-------------------------------"
+		puts " "
 
 	end	
 
-	def createDbB(prefix)
+	def createDbB
 
 		currentPath = Utility.navigate("Sample_data")
 
-		r1 = "#{prefix}_R1_trimmed.fastq"
-		r2 = "#{prefix}_R2_trimmed.fastq"
+		r1 = "#{@prefix}_R1_trimmed.fastq"
+		r2 = "#{@prefix}_R2_trimmed.fastq"
 
 		if currentPath.include? "/Sample_data"
 			
@@ -121,122 +134,30 @@ class CreateAndQueryDb
 			#rawreads.each do |file|
 			#	Utility.unzip(file)
 			#end	
-			puts rawReads.inspect
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{rawReads.inspect}"
 			cmd = "sickle pe -f #{rawReads[0].to_s} -r #{rawReads[1].to_s} -t sanger -o #{r1} -p #{r2} -s singles.fastq"
 			
-			puts "Creating database B from raw sequence reads...."
-			puts "Processing reads by trimming low quality bases (Threashold for quality is 20 and for length is 20bp)..."
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Creating database B from raw sequence reads...."
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing reads by trimming low quality bases (Threashold for quality is 20 and for length is 20bp)..."
 			Avail.executeCmd(cmd)
 			#FileUtils.rm "singles.fastq"
 
 			puts " "
 			puts "-------------------------------"
-			puts "Database B successfully created"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Database B successfully created"
 			puts "-------------------------------"
 			puts " "
 		
 		else
 			
-			puts "ERROR::Possibly wandering in wrong directory!"
+			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Possibly wandering in wrong directory!"
 			exit
 		
 		end		
 
 	end
 
-	def useBlast(dir, partial ,threads, prefix)
-		
-		count = 0
-		if threads == 0
-			count = Utility.countSeq(partial)
-		else
-			count = threads
-		end	
-
-		#blastn -query partials.fasta -db R1 -out blastn_out_R1.tab -outfmt 6 -max_target_seqs 50000 -num_threads 25
-		if Utility.directory_exists?("DB")
-			
-			cmd = "blastn -query #{partial}.fasta -db #{prefix} -out #{prefix}.out -outfmt 6 -max_target_seqs 50000 -num_threads #{count}"
-			
-			puts "Executing blast search...."
-			
-			Utility.executeCmd(cmd)	
-		else
-			puts "ERROR::Database directory does not exist!"
-			exit
-		end	
-		
-	end	
-
-	def useNhmmer(partial, prefix, threads)
-		
-		count = 0
-		if threads == 0
-			count = Utility.countSeq(partial)
-		else
-			count = threads
-		end	
-
-		#nhmmer --tblout pacbio_nillu_hmmer.blastout --noali --incE 0.0001 -E 0.001 --max --dna --cpu 16 ER1_vF_CYP6ER1vR1.fasta 8830_1_2_3_4_5_merged.fasta
-		if Utility.directory_exists?("DB")
-			
-			cmd = "nhmmer --tblout #{prefix}.out --noali --incE 0.001 -E 0.001 --max --dna --cpu #{count} #{partial}.fasta #{prefix}.fasta"
-			
-			puts "Executing nhmmer search...."
-			
-			Utility.executeCmd(cmd)	
-		
-		else
-			
-			puts "ERROR::Database directory does not exist!"
-			exit
-		
-		end	
-
-
-	end
-
-	def fetchPairs(dbdir, datadir, searchAlgo)
-
-		if Utility.directory_exists?(dbdir) && Utility.directory_exists?(datadir)
-
-			Utility.navigate(dbdir)
-			searchResultOutput = Dir.glob("*.out")
-			Utility.moveFilesToTmp(searchResultOutput)
-			
-			Utility.navigate(datadir)
-			rawDataFiles = Dir.glob("*.fastq")
-			Utility.moveFilesToTmp(rawDataFiles)
-			Utility.navigate("tmp")
-
-						
-				if searchAlgo.eql?("blast")		
-					
-					cmd_1 = "awk '{print $1}' #{searchResultOutput.to_s} > #{searchResultOutput.to_s}_filtered.out"
-					Utility.executeCmd(cmd)
-				
-				else
-					
-					cmd_1 = "awk '{print $2}' #{searchResultOutput.to_s} > #{searchResultOutput.to_s}_filtered.out"
-					Utility.executeCmd(cmd)
-				
-				end	
-
-				rawDataFiles.each_with_index do |value, index| 
-					
-					cmd_2 = "seqtk subseq  #{value} #{searchResultOutput.to_s}_filtered.out > targeted_R#{index}.fasta"	
-					
-					Utility.executeCmd(cmd)
-				
-				end	
-		else
-			
-			puts "ERROR::Either DB or Data directory is not available!!"		
-		
-		end		
-
-
-	end
+	
 
 
 end	
