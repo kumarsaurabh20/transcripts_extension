@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/ruby	
 
 require 'utility'
 require 'optparse'
@@ -103,6 +103,12 @@ class Itransmap
 			end
 
 			opts.on_tail('-d', '--database <database_prefix>', 'Use this option to create blast and hmmer database') do |prefix|
+				create = CreateAndQueryDb.new(prefix)
+				create.formatReadFiles("partials.fasta", "blast")
+				exit
+			end
+
+			opts.on_tail('-m', '--mapping <mapping_prefix>', 'Use this option to map the reads against partial transcripts') do |prefix|
 				create = CreateAndQueryDb.new(prefix)
 				create.formatReadFiles("partials.fasta", "blast")
 				exit

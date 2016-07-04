@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 
 require 'utility'
 require 'fileutils'
