@@ -395,6 +395,40 @@ module Utility
 		 return data	
 	end	
 
+	def Utility.createRScript(pass)
+
+		File.open("getConsensus.R", "w") do |file|
+	
+			file << "is.installed <- function(x){\n"
+		  	file << "is.element(x, installed.packages()[,1])\n"
+			file << "}\n"
+			file << "checkInstallation <- function(x) {\n"
+		  	file << "if (!is.installed(x)) {\n"
+		    file << "cat(\'Package \',x,\' is not found!\', \'\n\')\n"
+		    file << "cat(\'Installing \',x, \'\n\')\n"
+		    file << "install.packages(x)\n"
+		  	file << "} else\n"
+		    file << "{\n"
+		    file << "cat(\'Package \',x,\' is found!\', \'\n\')\n"  
+		    file << "}\n"
+			file << "}\n"
+			file << "getConsensus <- function(file, out) {\n"
+			file << "checkInstallation(\"Biostrings\")\n"
+			file << "checkInstallation(\"DECIPHER\")\n"
+			file << "readFasta <- readDNAStringSet(file)\n"
+			file << "msa <- AlignSeqs(dna)\n"
+			file << "consensus <- ConsensusSequence(msa)\n"
+			file << "writeXStringSet(consensus, file=out)\n"
+			file << "}\n"
+			file << "library(\"Biostrings\")"
+			file << "library(\"Biostrings\")"
+			file << "getConsensus(\"left.fasta\", \"left.consensus\")\n" if pass.eql?(1)
+			file << "getConsensus(\"right.fasta\", \"right.consensus\")\n" if pass.eql?(1)
+			file << "getConsensus(\"merged.fasta\", \"merged.consensus\")\n" if pass.eql?(2)
+		end
+
+	end
+
 	def Utility.intro 
 		puts "							" 
 		puts "##############################################################################"

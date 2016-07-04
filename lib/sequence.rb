@@ -5,6 +5,8 @@ require 'avail'
 
 module Sequence
 
+	@step=Time.new
+
 	class DataFormatError < IOError
     	def self.message
       		puts "Data format error -- check input file"
@@ -140,40 +142,14 @@ module Sequence
 
 	end	
 
-	def Sequence.getConsensus
+	def Sequence.getConsensus(pass)
 
-		File.open("getConsensus.R", "w") do |file|
-	
-			file << "is.installed <- function(x){\n"
-		  	file << "is.element(x, installed.packages()[,1])\n"
-			file << "}\n"
-			file << "checkInstallation <- function(x) {\n"
-		  	file << "if (!is.installed(x)) {\n"
-		    file << "cat(\'Package \',x,\' is not found!\', \'\n\')\n"
-		    file << "cat(\'Installing \',x, \'\n\')\n"
-		    file << "install.packages(x)\n"
-		  	file << "} else\n"
-		    file << "{\n"
-		    file << "cat(\'Package \',x,\' is found!\', \'\n\')\n"  
-		    file << "}\n"
-			file << "}\n"
-			file << "getConsensus <- function(file, out) {\n"
-			file << "checkInstallation(\"Biostrings\")\n"
-			file << "checkInstallation(\"DECIPHER\")\n"
-			file << "readFasta <- readDNAStringSet(file)\n"
-			file << "msa <- AlignSeqs(dna)\n"
-			file << "consensus <- ConsensusSequence(msa)\n"
-			file << "writeXStringSet(consensus, file=out)\n"
-			file << "}\n"
-			file << "library(\"Biostrings\")"
-			file << "library(\"Biostrings\")"
-			file << "getConsensus(\"left.fasta\", \"left.consensus\")\n"
-			file << "getConsensus(\"right.fasta\", \"right.consensus\")\n"
-		end
-
-		Utility.runRscript("getConsensus.R")
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}] Creating R Script..."
+		Utility.createRScript(pass)
+		
+		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}] Running R Script..."
+		Utility.runRscript
 
 	end	
-
 
 end	

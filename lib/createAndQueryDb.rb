@@ -157,9 +157,6 @@ class CreateAndQueryDb
 
 	end
 
-	
-
-
 end	
 
 #convert from zipped to fastq
