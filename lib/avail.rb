@@ -148,18 +148,6 @@ module Avail
 
 	end	
 
-	#http://code.tutsplus.com/tutorials/ruby-for-newbies-working-with-directories-and-files--net-18810
-	# def Avail.makeDir(dir)
-		
-	# 	setpath = self.setDir
-		
-	# 	FileUtils.cd(setpath)
-		
-	# 	self.checkDirAtRootAndMake(dir)
-		
-	# 	return true	
-	# end
-
 	#Multiple arguments
 	#http://stackoverflow.com/questions/831077/how-do-i-pass-multiple-arguments-to-a-ruby-method-as-an-array
 	def Avail.expunge(file)

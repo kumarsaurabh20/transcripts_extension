@@ -395,7 +395,7 @@ module Utility
 		 return data	
 	end	
 
-	def Utility.createRScript(pass)
+	def Utility.createRScript(pass, prefix, mainPass)
 
 		File.open("getConsensus.R", "w") do |file|
 	
@@ -415,16 +415,26 @@ module Utility
 			file << "getConsensus <- function(file, out) {\n"
 			file << "checkInstallation(\"Biostrings\")\n"
 			file << "checkInstallation(\"DECIPHER\")\n"
-			file << "readFasta <- readDNAStringSet(file)\n"
-			file << "msa <- AlignSeqs(dna)\n"
-			file << "consensus <- ConsensusSequence(msa)\n"
-			file << "writeXStringSet(consensus, file=out)\n"
+			file << "leftFasta <- readDNAStringSet(file)\n" if pass.eql?(1)
+			file << "rightFasta <- readDNAStringSet(file)\n" if pass.eql?(1)
+			file << "leftdna <- AlignSeqs(leftFasta)\n" if pass.eql?(1)
+			file << "rightdna <- AlignSeqs(rightFasta)\n" if pass.eql?(1)
+			file << "leftcon <- ConsensusSequence(leftdna)\n" if pass.eql?(1)
+			file << "rightcon <- ConsensusSequence(rightdna)\n" if pass.eql?(1)
+			file << "writeXStringSet(leftcon, file=out)\n" if pass.eql?(1)
+			file << "writeXStringSet(rightcon, file=out)\n" if pass.eql?(1)
+			######
+			file << "dna <- readDNAStringSet()\n" if pass.eql?(2)
+			file << "DNA <- AlignSeqs(dna)\n" if pass.eql?(2)
+			file << "con <- ConsensusSequence(DNA)\n" if pass.eql?(2)
+			file << "writeXStringSet(rightcon, file=out)\n" if pass.eql?(2)
+			######
 			file << "}\n"
 			file << "library(\"Biostrings\")"
 			file << "library(\"Biostrings\")"
-			file << "getConsensus(\"left.fasta\", \"left.consensus\")\n" if pass.eql?(1)
-			file << "getConsensus(\"right.fasta\", \"right.consensus\")\n" if pass.eql?(1)
-			file << "getConsensus(\"merged.fasta\", \"merged.consensus\")\n" if pass.eql?(2)
+			file << "getConsensus(\"left.fasta\", \"leftcon.fasta\")\n" if pass.eql?(1)
+			file << "getConsensus(\"right.fasta\", \"rightcon.fasta\")\n" if pass.eql?(1)
+			file << "getConsensus(\"#{prefix}_merged.fasta\", \"#{prefix}_consensus_Pass#{mainPass}.fasta\")\n" if pass.eql?(2)
 		end
 
 	end
