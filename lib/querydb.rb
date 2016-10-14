@@ -3,8 +3,8 @@
 require 'utility'
 require 'fileutils'
 require 'avail'
-require 'sequence'
-require 'querydb'
+#require 'sequence'
+#require 'querydb'
 
 
 class Querydb

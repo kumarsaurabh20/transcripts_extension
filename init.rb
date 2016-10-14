@@ -1,17 +1,17 @@
 #!/usr/bin/ruby
 
-##iTransMap###
+##Transcript Extension###
 
 ##Launch this file from the command line to start the application and get started###
 
 APP_ROOT = File.dirname(__FILE__)
 $:.unshift(File.join(APP_ROOT, 'lib'))
 
-require "itransmap"
+require 'extension'
 #require "Testup"
 
 
-map = Itransmap.new
+map = Extension.new
 map.options(ARGV)
 
 #test = Testdir.new
