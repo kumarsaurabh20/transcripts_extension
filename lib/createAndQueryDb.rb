@@ -4,15 +4,12 @@ require 'utility'
 require 'fileutils'
 require 'avail'
 require 'sequence'
-require 'querydb'
 
 class CreateAndQueryDb
 
 	BadRunError=Class.new(Exception)
 	ArgumentError=Class.new(StandardError)
 	NoMethodError=Class.new(NameError)
-	
-
 
 	attr_accessor :prefix, :step	
 
@@ -27,7 +24,7 @@ class CreateAndQueryDb
 		
 		begin
 
-			currentPath = Utility.navigate("Sample_data")
+			currentPath = Utility.navigate("Data")
 
 			files = Dir.glob("*.fastq.gz")
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{files.inspect}" 
@@ -74,23 +71,6 @@ class CreateAndQueryDb
 
 		createDbB
 
-		query = Querydb.new(@prefix)
-
-		if searchAlgo.eql?("blast")
-
-			query.useBlast("DB", partials)
-
-		elsif searchAlgo.eql?("nhmmer")	
-			
-			query.useNhmmer("DB", partials)
-
-		else
-
-			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Please enter the search algorithm!"
-			raise ArgumentError
-
-		end	
-
 	end	
 
 	def createDbA(file)
@@ -123,12 +103,12 @@ class CreateAndQueryDb
 
 	def createDbB
 
-		currentPath = Utility.navigate("Sample_data")
+		currentPath = Utility.navigate("Data")
 
 		r1 = "#{@prefix}_R1_trimmed.fastq"
 		r2 = "#{@prefix}_R2_trimmed.fastq"
 
-		if currentPath.include? "/Sample_data"
+		if currentPath.include? "/Data"
 			
 			rawReads = Dir.glob("*.gz")
 			#sickle pe -f R1.fastq.gz -r R2.fastq.gz -t sanger -o R1_sickle_20.fastq -p R2_sickle_20.fastq -s lost-mate.fastq -q 20 -l 20
@@ -158,41 +138,4 @@ class CreateAndQueryDb
 
 	end
 
-end	
-
-#convert from zipped to fastq
-		#fastq to fasta
-
-		#irb(main):002:0> accepted_formats = [".txt", ".pdf"]
-		#irb(main):003:0> File.extname("example.pdf") # get the extension
-
-		#Dir.chdir("/var/spool/mail")
-		#Dir.entries("testdir")
-		#Dir.foreach("testdir") {|x| puts "Got #{x}" }
-		#Dir.getwd           #=> "/tmp"
-		#Dir.pwd             #=> "/tmp"	
-
-		#Dir["config.?"]                     #=> ["config.h"]
-		#Dir.glob("config.?")                #=> ["config.h"]
-		#Dir.glob("*.[a-z][a-z]")            #=> ["main.rb"]
-		#Dir.glob("*.[^r]*")                 #=> ["config.h"]
-		#Dir.glob("*.{rb,h}")                #=> ["main.rb", "config.h"]
-		#Dir.glob("*")                       #=> ["config.h", "main.rb"]
-		#Dir.glob("*", File::FNM_DOTMATCH)   #=> [".", "..", "config.h", "main.rb"]
-
-		#rbfiles = File.join("**", "*.rb")
-		#Dir.glob(rbfiles)                   #=> ["main.rb",
-                                    #    "lib/song.rb",
-                                    #    "lib/song/karaoke.rb"]
-
-        #libdirs = File.join("**", "lib")
-		#Dir.glob(libdirs)                   #=> ["lib"]
-
-		#librbfiles = File.join("**", "lib", "**", "*.rb")
-		#Dir.glob(librbfiles)                #=> ["lib/song.rb",
-                                    #    "lib/song/karaoke.rb"]
-
-		#librbfiles = File.join("**", "lib", "*.rb")
-		#Dir.glob(librbfiles)                #=> ["lib/song.rb"]                            
-
-		#Dir.mkdir(File.join(Dir.home, ".foo"), 0700) #=> 0
+end

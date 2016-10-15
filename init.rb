@@ -12,8 +12,8 @@ require 'extension'
 
 
 map = Extension.new
-map.options(ARGV)
-
+#map.options(ARGV)
+map
 #test = Testdir.new
 #test.runCommand("cat", "file1", "file2", "file3", "file4")
 

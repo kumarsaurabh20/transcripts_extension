@@ -24,17 +24,7 @@ module Utility
 		check.checkTools
 		
 		exit
-	end	
-
-	# def Utility.createDatabase
-
-	# 	files = Dir.glob("*.fastq.gz")
-	# 	if files.is_a?(Array) and !files.empty?
-
-	# 		Utility.mergeZippedFiles(files[0], files[1])
-
-	# 		Utility.convertQ2A(file)
-	# end	
+	end		
 
 	def Utility.createDbFasta(prefix, array)
 		
@@ -315,65 +305,7 @@ module Utility
 
 		return temp
 
-	end	
-
-	def Utility.getPartialContigs(input, size)
-
-		filterList = {}
-		header = []
-		sequence = ""
-
-		File.open(input.to_s, "r")  do |file|
-			
-			file.each_line do |line|
-
-				if header.empty? && line.start_with?(">")
-					header = line.split(" ")[0]
-					#puts "this is line 1"
-					#puts line.to_s
-					
-				elsif !header.empty? && line.start_with?(">") && !file.eof?
-
-						if !sequence.empty? && sequence.size <= size
-								
-								#puts sequence
-								
-								filterList["#{header}"] = sequence
-								#puts filterList.to_s
-								#puts "hash is just filled with #{line.chomp}"
-
-								header = line.split(" ")[0]
-								#puts "new header #{header} is created"
-								
-								sequence = ""				
-
-						end	
-				
-				else 					
-					sequence.concat(line.chomp)
-					#puts "sequence is just filled with #{line.chomp}"
-					filterList["#{header}"] = sequence if file.eof? && sequence.size <= size			
-				end		
-
-			end	
-
-		end		
-		#puts filterList.to_s
-		Avail.writeFile("FilteredByLength.fasta", filterList)	
-
-	end
-
-	# check whether the necessary perl scripts exist and cand be found
-
-	def Utility.runRscript(scriptFile)
-
-		raise BadFileError, "ERROR::Either the file is not available or the file is not executable!" if !File.exist?(scriptFile) and !File.executable?(scriptFile)
-		
-		cmd="R --vanilla -q < #{scriptFile}"
-		
-		Avail.executeCmd(cmd)
-
-	end	
+	end		
 
 	def Utility.getSequenceLength(file)
 
@@ -396,63 +328,6 @@ module Utility
 		 return data	
 	end	
 
-	def Utility.createRScript(pass, prefix, mainPass)
-
-		File.open("getConsensus.R", "w") do |file|
-			file << "#############################\n"
-			file << "#R Script for iTransMap\n"
-			file << "#############################\n"
-			file << "# \n"
-			file << "#Function to check the package installation status\n"
-			file << "# \n"
-			file << "is.installed <- function(x){\n"
-		  	file << "\tis.element(x, installed.packages()[,1])\n"
-			file << "}\n"
-			file << "# \n"
-			file << "#Function to install the package\n"
-			file << "# \n"
-			file << "checkInstallation <- function(x) {\n"
-		  	file << "\tif (!is.installed(x)) {\n"
-		    file << "\t\tcat(\'Package \',x,\' is not found!\')\n"
-		    file << "\t\tcat(\'Installing \',x)\n"
-		    file << "\t\tsource(\"https://bioconductor.org/biocLite.R\")\n"
-		    file << "\t\tsource(\"biocLite(x)\")\n"
-		  	file << "\t} else\n"
-		    file << "\t\t{\n"
-		    file << "\t\t\tcat(\'Package \',x,\' is found!\')\n"  
-		    file << "\t\t}\n"
-			file << "}\n"
-			file << "# \n"
-			file << "#Function to fetch the consensus sequence and write a file\n"
-			file << "# \n"
-			file << "getConsensus <- function(file, out) {\n"
-			file << "\tcheckInstallation(\"Biostrings\");\n"
-			file << "\tcheckInstallation(\"DECIPHER\");\n"
-			file << "\tlibrary(\"Biostrings\");\n"
-			file << "\tlibrary(\"DECIPHER\");\n"
-			file << "\tleftFasta <- readDNAStringSet(file);\n" if pass.eql?(1)
-			file << "\trightFasta <- readDNAStringSet(file);\n" if pass.eql?(1)
-			file << "\tleftdna <- AlignSeqs(leftFasta);\n" if pass.eql?(1)
-			file << "\trightdna <- AlignSeqs(rightFasta);\n" if pass.eql?(1)
-			file << "\tleftcon <- ConsensusSequence(leftdna);\n" if pass.eql?(1)
-			file << "\trightcon <- ConsensusSequence(rightdna);\n" if pass.eql?(1)
-			file << "\twriteXStringSet(leftcon, file=out);\n" if pass.eql?(1)
-			file << "\twriteXStringSet(rightcon, file=out);\n" if pass.eql?(1)
-			file << "\tdna <- readDNAStringSet(file);\n" if pass.eql?(2)
-			file << "\tDNA <- AlignSeqs(dna);\n" if pass.eql?(2)
-			file << "\tcon <- ConsensusSequence(DNA);\n" if pass.eql?(2)
-			file << "\twriteXStringSet(rightcon, file=out);\n" if pass.eql?(2)
-			file << "}\n"
-			file << "# \n"
-			file << "#Call the functions\n"
-			file << "# \n"
-			file << "getConsensus(\"left.fasta\", \"leftcon.fasta\");\n" if pass.eql?(1)
-			file << "getConsensus(\"right.fasta\", \"rightcon.fasta\");\n" if pass.eql?(1)
-			file << "getConsensus(\"#{prefix}_merged.fasta\", \"#{prefix}_consensus_Pass#{mainPass}.fasta\");\n" if pass.eql?(2)
-		end
-
-	end
-
 	def Utility.intro 
 		puts "							" 
 		puts "###############################################################################################"
@@ -474,11 +349,5 @@ module Utility
 		puts "#################################################################################################"
 		puts "							"
 	end
-
-	def Utility.copyright
-		puts "Copyright 2016 Singh KS"
-		puts "Licensed under the Apache License, version 2.0 (the \"License\"); You may not use this file except in compliance with the License. You may obtain a copy of the license at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the license is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the license"
-	end  
-
 
 end	

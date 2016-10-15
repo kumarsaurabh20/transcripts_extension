@@ -56,17 +56,9 @@ module Sequence
 
 			cmd = "awk '{print $2}' #{blastOutFile} | wc -l"
 			Utility.executeCmd(cmd)
-		
 		else
-			
 			puts "ERROR::Blast output file is not found!"
 			exit
-		
 		end	
-
 	end	
-
-
-
 end	
-
