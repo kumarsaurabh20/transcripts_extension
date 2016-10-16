@@ -8,15 +8,12 @@ Reads database A is just a reads repository as created by blast tool. If you are
 Reads Database B is just a quality and length trimmed fastq file. We keep the R1 and R2 file separate to effectively retrieve good quality reads using the hits obtained from BLAST/NHMMER searches. 
 
 ##Dependencies
-this program is dependent on 3 programs namely, blast command line tools, seqtk, sickle and an optional nhmmer tool.
+this program is dependent on 3 programs namely, blast command line tools, seqtk, sickle and an optional nhmmer tool.The whole workflow mainly depends on Geneious software for the mapping step.
 
-The whole workflow mainly depends on Geneious software for the mapping step.
-
-Keep your gzipped fastq files (RNASeq datasets: merge all samples R1 and R2 files together) in Data folder. (Remove the Sample files before running your datasets)
-Keep the list all the partial transcripts from de-novo transcriptome assembly and keep it as a fasta formatted file in programs root folder. (You can replace the partials.fasta file with your partial transcripts file)
+Keep your gzipped fastq files (RNASeq datasets: merge all samples R1 and R2 files together) in Data folder. (Remove the Sample files before running your datasets). Create a multi-fasta file with all partial transcripts from de-novo transcriptome assembly and place it in program's root folder. (You can replace the partials.fasta file with your partial transcripts file)
 
 ##Output
-The program will create a new DB folder with blast/nhmmer databases. And all the partila transcripts replated files wull be generated in the Data folder with the same name as your partial transcripts header sequences.
+The program will create a new DB folder with blast/nhmmer databases. And all the partial transcripts replated files will be generated in the Data folder. A new folder is created, for individual partial transcripts, with the same name as your partial transcripts header sequences. These folder has partial transcript sequence, blast/nhmmer results (just the hits name) and filtered/targeted subset of reads.
 
 ##Usage
 
@@ -39,22 +36,22 @@ Common options:
 
 Follow the steps:
 
-1. Check if you have all the supporting tools in your path:
+1> Check if you have all the supporting tools in your path:
 
 `ruby init.rb --precheck`
 
-2. Create the databases:
+2> Create the databases:
 
 `ruby init.rb --database <databases_name>`
 
-3. Create a targeted subset of reads to further use them in the mapping step in Geneious:
+3> Create a targeted subset of reads to further use them in the mapping step in Geneious:
 
 `ruby init.rb -s partials.fasta -a blast -p <database_name>`
 
 NOTE: The database name should be same as in step 2.
 
-4. Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcripts.
+4> Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcripts.
 
-5. Perform the mapping using Geneious mapper (Mapping using reference. Here reference sequence should be your partial transcript).
+5> Perform the mapping using Geneious mapper (Mapping using reference. Here reference sequence should be your partial transcript).
 
-6. Once the mapping is done, export the consensus sequence of the contig and repeat steps 3-6 multiple times until a desired gene length is obtained.  
+6> Once the mapping is done, export the consensus sequence of the contig and repeat steps 3-6 multiple times until a desired gene length is obtained.  
