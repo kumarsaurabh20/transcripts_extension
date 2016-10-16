@@ -18,11 +18,8 @@ module Utility
 	#Use prerequisite shell script
 	# find out if some programmes are not installed.
 	def Utility.checkAndSetTools
-		
 		check = Prerequisite.new
-		
 		check.checkTools
-		
 		exit
 	end		
 
@@ -35,28 +32,21 @@ module Utility
 			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
 			
 			Avail.executeCmd(cmd) 
-		
 		else 
 			
 			raise "Expected Array Value to create a final fasta file!"	
-		
 		end
-
 	end
 
 	# check the write permission of $workDir before building of the work directory
 	def Utility.checkPermissions(file)
 		
 		if File.exist?(file) && File.executable?(file)
-		
-			return true
-		
-		else
-		
-			return false
-		
-		end	
 
+			return true
+		else
+			return false
+		end	
 	end
 
 	def Utility.fileType(file)	
@@ -74,13 +64,10 @@ module Utility
 		elsif ex.eql?(".fastq")
 			
 			return "fastq"
-		
 		else
 			
 			return "other"
-		
 		end
-
 	end
 
 	def Utility.navigate(folder)
@@ -88,104 +75,63 @@ module Utility
 		temp = ""
 		setpath = Avail.setDir
 		FileUtils.cd(setpath)
-		
-		if File.directory?(folder)
 
+		if File.directory?(folder)
 			temp = File.join(setpath, folder)
-			
 			FileUtils.cd(temp)
-			
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Current working directory is moved to #{folder}"
-		
 		else
-			
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::Data folder is not found!"
-			
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  If Data folder is not available, create a folder and name it Data and dump all your raw data files!"
-			
 			exit
-		
 		end
 
 		return temp
-
 	end
 
 	def Utility.mergeZippedFiles(file1, file2, prefix)
-
 		r1 = File.expand_path(file1)
-		
 		puts r1.to_s
-		
 		r2 = File.expand_path(file2)
-		
 		puts r2.to_s
-		
 		name = File.basename(file1, "*.fastq.gz")
-		
 		outfile = "#{prefix}_merged.fastq"
-		
-		cmd = "zcat #{r1} #{r2} > #{outfile}"
-		
+		cmd = "cat #{r1} #{r2} > #{outfile}"
 		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Merging zipped fastq files!"
-		
 		Avail.executeCmd(cmd)
-		
 		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  This is the ourput of mergeZipped method #{outfile}"
-		
 		return outfile
-
 	end	
 
 	def Utility.unzip(file)		
 		#Avail.navigate(dir)
-		#raise "Error while moving to database directory!!" unless Dir.pwd.eql?(setpath)
 		cmd = "gzip -d #{file}"
-		
 		Avail.executeCmd(cmd)
 	end	
 
 	# check whether fasta file exist and how many sequences it contains
 	def Utility.countSeq(file)
-		
 		cmd = "grep -c '^>' #{file}"
-		
-		count = `#{cmd}`
-		
+		count = `#{cmd}`		
 		return count
 	end
 
 	def Utility.convertQ2A(file, prefix)
-		
 		name = File.basename(file, ".*")
 		outfile = "#{name}.fasta"
-		
 		if name.empty?
-		
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Error::FastQ File not found!"
-		
 		else
-			
 			if defined? prefix
-				
 				cmd = "seqtk seq -A #{file} > #{prefix}.fasta"
-				
 				Avail.executeCmd(cmd)			
-				
 				return "#{prefix}.fasta"
-			
 			else
-				
 				cmd = "seqtk seq -A #{file} > #{outfile}"
-				
 				Avail.executeCmd(cmd)	
-				
 				return "#{outfile}.fasta"
-			
 			end
-		
 		end	
-
 	end	
 
 	def Utility.directory_exists?(dir)
@@ -216,8 +162,6 @@ module Utility
 		dirname = File.join("#{APP_ROOT}", dir, file)
 
 		if Dir.exist? dirname
-			#File.basename("/home/gumby/work/ruby.rb", ".*")    #=> "ruby"		
-			#FileUtils.mv 'stuff.rb', '/notexist/lib/ruby', :force => true  # no error 
 			temp = File.expand_path("#{file}.#{ext}", "#{APP_ROOT}/DB")
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Transferring file #{temp}"
 			FileUtils.mv temp, dirname, :force => true
@@ -228,9 +172,6 @@ module Utility
 			puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Transferring file #{temp}"
 			FileUtils.mv temp, dirname, :force => true
 		end	
-
-		
-		
 		
 	end
 

@@ -20,10 +20,13 @@ class Querydb
 
 	def useBlast(dir, partials)
 		
+		#############
+		#Blast specific parameters
 		evalue="0.01".to_f
 		outfmt="6".to_i
 		maxTarget="50000".to_i
 		count=16
+		############
 
 		Avail.moveFile(Utility::APP_ROOT, dir, partials) if Utility.const_defined?(:APP_ROOT)
 		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Partials file moved to DB directory"
@@ -53,15 +56,17 @@ class Querydb
 
 				currentPath = Utility.navigate("Data")	
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
-				
+			
+				#cmd = "seqtk subseq #{@prefix}_R1_trimmed.fastq ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R1.fastq"
+	
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R1 mates..."	
-				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R1.fasta"
+				cmd = "seqtk subseq #{@prefix}_R1_trimmed.fastq ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R1.fastq"
 				Avail.executeCmd(cmd)
 
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Generated #{file}_filtered_R1.fasta" if File.exist? "#{file}/#{file}_filtered_R1.fasta"
 
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R2 mates..."
-				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R2.fasta"	
+				cmd = "seqtk subseq #{@prefix}_R2_trimmed.fastq ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R2.fasta"	
 				Avail.executeCmd(cmd)
 
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Generated #{file}_filtered_R2.fasta" if File.exist? "#{file}/#{file}_filtered_R2.fasta"
@@ -75,9 +80,12 @@ class Querydb
 	end	
 
 	def useNhmmer(dir, partials)
-		
+
+		##################
+		#nhmmer specific parameters			
 		evalue="0.01".to_f
 		count="16".to_i
+		#################
 
 		Avail.moveFile(Utility::APP_ROOT, dir, partials) if Utility.const_defined?(:APP_ROOT)
 		puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Partials file moved to DB directory"
@@ -108,11 +116,11 @@ class Querydb
                                 currentPath = Utility.navigate("Data")
                                 puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
 					
-				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > #{file}_filtered_R1.fa"
+				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R1.fa"
 				puts = "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R1 mates..."
 				Avail.executeCmd(cmd)
 
-				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > #{file}_filtered_R2.fa"
+				cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R2.fa"
 				puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R2 mates..."	
 				Avail.executeCmd(cmd)
 			else
