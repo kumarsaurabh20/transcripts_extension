@@ -1,10 +1,10 @@
-##Partial trainscripts extension
+#Partial trainscripts extension
 This ruby based scripta is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two reads databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript on bioarchive.
 
-#Reads Database A
+##Reads Database A
 Reads database A is just a reads repository as created by blast tool. If you are using nhmmer for very sensitive searches, just merge all the reads, form fastq files, and convert it in a single fasta formatted file.
 
-#Reads Database B
+##Reads Database B
 Reads Database B is just a quality and length trimmed fastq file. We keep the R1 and R2 file separate to effectively retrieve good quality reads using the hits obtained from BLAST/NHMMER searches. 
 
 ##Dependencies
@@ -15,7 +15,7 @@ The whole workflow mainly depends on Geneious software for the mapping step.
 Keep your gzipped fastq files (RNASeq datasets: merge all samples R1 and R2 files together) in Data folder. (Remove the Sample files before running your datasets)
 Keep the list all the partial transcripts from de-novo transcriptome assembly and keep it as a fasta formatted file in programs root folder. (You can replace the partials.fasta file with your partial transcripts file)
 
-#Output
+##Output
 The program will create a new DB folder with blast/nhmmer databases. And all the partila transcripts replated files wull be generated in the Data folder with the same name as your partial transcripts header sequences.
 
 ##Usage
@@ -45,7 +45,7 @@ Follow the steps:
 
 2. Create the databases:
 
-`ruby init.rb --databases <databases_name>`
+`ruby init.rb --database <databases_name>`
 
 3. Create a targeted subset of reads to further use them in the mapping step in Geneious:
 
