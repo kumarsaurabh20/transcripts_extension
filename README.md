@@ -1,5 +1,5 @@
 #Partial trainscripts extension
-This ruby based scripta is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two reads databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript on bioarchive.
+This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two reads databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript on bioarchive.
 
 ##Reads Database A
 Reads database A is just a reads repository as created by blast tool. If you are using nhmmer for very sensitive searches, just merge all the reads, form fastq files, and convert it in a single fasta formatted file.
