@@ -13,7 +13,7 @@ this program is dependent on 3 programs namely, blast command line tools, seqtk,
 Keep your gzipped fastq files (RNASeq datasets: merge all samples R1 and R2 files together) in Data folder. (Remove the Sample files before running your datasets). Create a multi-fasta file with all partial transcripts from de-novo transcriptome assembly and place it in program's root folder. (You can replace the partials.fasta file with your partial transcripts file)
 
 ##Output
-The program will create a new DB folder with blast/nhmmer databases. And all the partial transcripts replated files will be generated in the Data folder. A new folder is created, for individual partial transcripts, with the same name as your partial transcripts header sequences. These folder has partial transcript sequence, blast/nhmmer results (just the hits name) and filtered/targeted subset of reads.
+The program will create a new DB folder with blast/nhmmer databases. And all the partial transcripts replated files will be generated in the Data folder. A new folder is created, for individual partial transcripts, with the same name as your partial transcripts header sequences. These folder has partial transcript sequence, blast/nhmmer results (just the hits name) and filtered/targeted subset of reads. After the query run, the program moves the partial transcripts file (in test data, partial file) in to DB folder.
 
 ##Usage
 
