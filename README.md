@@ -56,5 +56,5 @@ NOTE: The database name should be same as in step 2.
 
 6> Once the mapping is done, export the consensus sequence of the contig and repeat steps 3-6 multiple times until a desired gene length is obtained.  
 
-##Sample Data
+##Test Data
 Sample data has been included with the program just to understand the workflow and file locations. Before running your own datasets, it is recommended to run the program using sample data and using the above steps and later remove the sample files with your datasets.
