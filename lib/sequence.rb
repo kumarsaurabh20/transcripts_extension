@@ -15,20 +15,15 @@ module Sequence
   	end
 
 
-	def Sequence.checkSequence(seq)
-		
+	def Sequence.checkSequence(seq)	
 		count = 0
-		
 		if seq.include?("N")
-			
 			count = seq.count("N")
 			puts "WARNING:: #{count} N characters are found in your partial. It will have serious implication on the quality of mapping. Please remove it and try again!"
 			exit
-		
 		else
 			puts "Partial is OK!"			
 		end	
-
 	end
 
 	def Sequence.countFastaSeqs(file)
@@ -43,17 +38,12 @@ module Sequence
 				end	
 			end	
 		end	
-
 		return count
-
 	end	
 
 	def Sequence.countHits(blastOutFile)
-		
 		Utility.navigate("DB")
-
 		if Utility.checkFileExist(blastOutFile)
-
 			cmd = "awk '{print $2}' #{blastOutFile} | wc -l"
 			Utility.executeCmd(cmd)
 		else

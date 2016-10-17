@@ -5,14 +5,13 @@ require 'pp'
 
 class Prerequisite
 #check for 
-#samtools, bcftools, vcftools, smalt, R, bamview, seqtk, sickle, ncbi-blast, nhmmer
-#R package, msa etc
+#seqtk, sickle, ncbi-blast, nhmmer
 #Date.strptime("2012-09-21 19:45:48","%Y-%m-%d %H:%M:%S")
 VERSION="1.0.0"
 @@softwarePath = Hash.new
 
 	def checkTools
-		software = %w[samtools smalt R seqtk sickle blastn makeblastdb nhmmer] 
+		software = %w[seqtk sickle blastn makeblastdb nhmmer] 
 		software.each do |tool|
 				toolExists(tool) 
 		end	

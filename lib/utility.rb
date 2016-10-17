@@ -24,25 +24,18 @@ module Utility
 	end		
 
 	def Utility.createDbFasta(prefix, array)
-		
-		Avail.makeDir("DB")		
-		
+		Avail.makeDir("DB")				
 		if array.is_a?(Array)
-			
 			cmd = "cat #{array[0]} #{array[1]} > #{prefix}.fasta"
-			
 			Avail.executeCmd(cmd) 
 		else 
-			
 			raise "Expected Array Value to create a final fasta file!"	
 		end
 	end
 
 	# check the write permission of $workDir before building of the work directory
 	def Utility.checkPermissions(file)
-		
 		if File.exist?(file) && File.executable?(file)
-
 			return true
 		else
 			return false
@@ -50,28 +43,19 @@ module Utility
 	end
 
 	def Utility.fileType(file)	
-		
 		ex = File.extname(file)
-		
 		if ex.eql?(".fasta") || ex.eql?(".fa") || ex.eql?(".fsa")
-			
 			return "fasta"
-		
 		elsif ex.eql?(".gz")
-			
 			return "zipped"
-		
 		elsif ex.eql?(".fastq")
-			
 			return "fastq"
 		else
-			
 			return "other"
 		end
 	end
 
 	def Utility.navigate(folder)
-		
 		temp = ""
 		setpath = Avail.setDir
 		FileUtils.cd(setpath)
@@ -176,17 +160,11 @@ module Utility
 	end
 
 	def Utility.writeFile(outputFile, seqObject, headerPrefix)
-		
 		File.open(outputFile.to_s, 'a') do |file|
-		
 			seqObject.each_with_index do |element, index|
-			
 				file.write ">#{headerPrefix}#{index}\n#{element}\n"
-			
 			end	
-		
 		end
-
 	end
 
 	def Utility.readSingleFasta(inputFile)
@@ -197,65 +175,40 @@ module Utility
 		header = ""
 
 		File.open(inputFile.to_s, "r") do |f|
-	  		
 	  		f.each_line do |line|
-
 	  			if line.match('>')
-
 	  				header = line.chomp
-
 	  			else
-
 	  				sequence.concat(line.chomp)
-
 	  			end	
 	  		end
 		end
-
 		return header, sequence
-
 	end
 
 	def Utility.splitFasta(input)
-		
 		temp = Array.new
-
 		File.open(input.to_s, "r") do |file|
-
 			header = Array.new	
-
 			file.each_line do |line|				
-
 				if line.include? ">"
-					
 					temp << line.split(" ")[0].tr(">", "")
-
 					header = line.split(" ")
-
 					Avail.fileCreate(header, line)
-
 				else	
-					
 					Avail.fileCreate(header, line)
-				
 				end	
-
 			end	
-
 		end	
-
 		return temp
-
 	end		
 
 	def Utility.getSequenceLength(file)
-
 		data = Hash.new
 		header=""
 		len=nil
 
 		 File.open(file.to_s, "r") do |file|
-		 	
 		 	file.each_line do |line|
 		 		if line.include?(">")
 		 			header = line

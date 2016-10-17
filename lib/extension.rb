@@ -22,7 +22,7 @@ class Extension
 
 	ARGV << '-h' if ARGV.size==0
 	OptionParser.new do |opts|
-		opts.banner = "Usage: itransmap [options]"
+		opts.banner = "Usage: ruby init.rb [options]"
 		opts.separator ""
       		opts.separator "Required options:"
       		opts.separator "-----------------"
