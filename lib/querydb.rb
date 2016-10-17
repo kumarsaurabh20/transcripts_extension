@@ -133,6 +133,8 @@ class Querydb
 	                Utility.createAndMoveFiles(file, "filtered_R1.fa", "Data")
 	                Utility.createAndMoveFiles(file, "filtered_R2.fa", "Data")
 
+	                currentPath = Utility.navigate("Data")
+
 				else
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::#{file} related fasta file does not exist!"
 					exit
