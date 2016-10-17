@@ -86,7 +86,7 @@ class Querydb
 	end	
 
 	def useNhmmer(dir, partials)
-		
+
 		begin
 			##################
 			#nhmmer specific parameters			
@@ -114,22 +114,25 @@ class Querydb
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing hits list..."
 					Avail.executeCmd(cmd)
 
-					##Need to move all the files in temp/Data directory. Files ending with *.list *.fasta and store it under file folder.
-					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  moving temp files....!!"
-	                                Utility.createAndMoveFiles(file, "fasta", "Data")
-	                                Utility.createAndMoveFiles(file, "out", "Data")
-	                                Utility.createAndMoveFiles(file, "list", "Data")
-
-	                                currentPath = Utility.navigate("Data")
-	                                puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
+	                #currentPath = Utility.navigate("Data")
+	                #puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
 						
-					cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R1.fa"
+					cmd = "seqtk subseq #{@prefix}.fasta #{file}.list > #{file}.filtered_R1.fa"
 					puts = "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R1 mates..."
 					Avail.executeCmd(cmd)
 
-					cmd = "seqtk subseq #{@prefix}.fasta ./#{file}/#{file}.list > ./#{file}/#{file}_filtered_R2.fa"
+					cmd = "seqtk subseq #{@prefix}.fasta #{file}.list > #{file}.filtered_R2.fa"
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Fetching R2 mates..."	
 					Avail.executeCmd(cmd)
+
+					##Need to move all the files in temp/Data directory. Files ending with *.list *.fasta and store it under file folder.
+					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  moving temp files....!!"
+	                Utility.createAndMoveFiles(file, "fasta", "Data")
+	                Utility.createAndMoveFiles(file, "out", "Data")
+	                Utility.createAndMoveFiles(file, "list", "Data")
+	                Utility.createAndMoveFiles(file, "filtered_R1.fa", "Data")
+	                Utility.createAndMoveFiles(file, "filtered_R2.fa", "Data")
+
 				else
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::#{file} related fasta file does not exist!"
 					exit
