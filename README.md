@@ -1,19 +1,19 @@
 #Partial trainscripts extension
-This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two reads databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript on bioarchive.
+This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two read databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript.
 
 ##Reads Database A
-Reads database A is just a reads repository as created by blast tool. If you are using nhmmer for very sensitive searches, just merge all the reads, form fastq files, and convert it in a single fasta formatted file.
+Reads database A is just a reads repository as created by blast tool. If you are using nhmmer for very sensitive searches, just merge all the reads, form fastq files, in to a single fasta formatted file.
 
 ##Reads Database B
-Reads Database B is just a quality and length trimmed fastq file. We keep the R1 and R2 file separate to effectively retrieve good quality reads using the hits obtained from BLAST/NHMMER searches. 
+Reads Database B is quality and length trimmed fastq files (R1 and R2). We keep the R1 and R2 file separate to effectively retrieve good quality reads using the hits obtained from BLAST/NHMMER searches. 
 
 ##Dependencies
-this program is dependent on 3 programs namely, blast command line tools, seqtk, sickle and an optional nhmmer tool.The whole workflow mainly depends on Geneious software for the mapping step.
+this program is dependent on 3 programs namely, blast command line tools, seqtk, sickle and an optional nhmmer tool.The whole workflow mainly depends on Geneious software for the reads mapping step.
 
-Keep your gzipped fastq files (RNASeq datasets: merge all samples R1 and R2 files together) in Data folder. (Remove the Sample files before running your datasets). Create a multi-fasta file with all partial transcripts from de-novo transcriptome assembly and place it in program's root folder. (You can replace the partials.fasta file with your partial transcripts file)
+Keep your gzipped fastq files (RNASeq datasets: merge all samples together in to R1 and R2 files) in Data folder. (Remove the test files before running your datasets). Create a multi-fasta file with all partial transcripts from de-novo transcriptome assembly and place it in program's root folder. (You can replace the partials.fasta file with your partial transcripts file)
 
 ##Output
-The program will create a new DB folder with blast/nhmmer databases. And all the partial transcripts replated files will be generated in the Data folder. A new folder is created, for individual partial transcripts, with the same name as your partial transcripts header sequences. These folder has partial transcript sequence, blast/nhmmer results (just the hits name) and filtered/targeted subset of reads. After the query run, program moves the partial transcripts file (in test data, partials.fasta file) in to DB folder.
+The program will create a new DB folder with blast/nhmmer databases. The partial transcripts fasta is first moved to DB and splitted in to individual sequence files. Next, database searches are performed and later all the files are transferred to Data folder. A new folder is created, for individual partial transcripts, with the same name as your partial transcripts header sequences. These folder have partial transcript sequence, blast/nhmmer results (just the hits name) and filtered/targeted subset of reads.
 
 ##Usage
 
