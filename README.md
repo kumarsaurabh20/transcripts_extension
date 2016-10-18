@@ -50,9 +50,9 @@ Follow the steps:
 
 NOTE: The database name should be same as in step 2.
 
-4> Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcripts.
+4> Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcript sequence.
 
-5> Perform the mapping using Geneious mapper (Mapping using reference. Here reference sequence should be your partial transcript).
+5> Perform the mapping using Geneious mapper (Mapping using reference. Here reference sequence should be your partial transcript. In Geneious, use the sensitivity as recommended by the program and check the option "do not trim reads").
 
 6> Once the mapping is done, export the consensus sequence of the contig and repeat steps 3-6 multiple times until a desired gene length is obtained.  
 
