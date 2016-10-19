@@ -5,12 +5,9 @@ require 'fileutils'
 module Avail
 
 	BadRunError=Class.new(Exception)
-	class Error < StandardError
-    end
-    class ArgumentError < StandardError
-    end	
-    class SequenceFormatError < Error
-  	end
+	ArgumentError=Class.new(StandardError)
+	NoMethodError=Class.new(NameError)
+    SequenceFormatError=Class.new(Exception)
 
   # Error raised when FASTA file is malformed
 	class DataFormatError < IOError
@@ -44,6 +41,10 @@ module Avail
 		else
 			raise "Something terrible has happened while writing file. Try again!!"
 		end	
+	end
+
+	def Avail.check_blast_out(file)
+		return File.zero?(file)
 	end
 
 	def Avail.fileCreate(header, line)

@@ -10,9 +10,11 @@ module Utility
 	APP_ROOT = File.expand_path("../../", __FILE__) 
 	@step=Time.new
 		
-
-	class BadFileError < StandardError
-    end
+	BadRunError=Class.new(Exception)
+	ArgumentError=Class.new(StandardError)
+	NoMethodError=Class.new(NameError)
+    SequenceFormatError=Class.new(Exception)	
+	BadFileError=Class.new(StandardError) 
 
 	# Check and set path to all the required tools and software
 	#Use prerequisite shell script

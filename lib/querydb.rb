@@ -5,10 +5,6 @@ require 'fileutils'
 require 'avail'
 
 class Querydb
-
-	BadRunError=Class.new(Exception)
-	ArgumentError=Class.new(StandardError)
-	NoMethodError=Class.new(NameError)
 	
 	attr_accessor :filenames, :prefix, :step	
 
@@ -49,6 +45,8 @@ class Querydb
 					cmd = "awk '{print $2}' #{file}.out | sed '1d' > #{file}.list"
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing hits list..."
 					Avail.executeCmd(cmd)
+
+					abort "Ooops!!BLAST search returned no hits.." if Avail.check_blast_out("#{file}.list") == true
 
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  moving temp files....!!"
 					Utility.createAndMoveFiles(file, "fasta", "Data")
@@ -114,6 +112,8 @@ class Querydb
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing hits list..."
 					Avail.executeCmd(cmd)
 
+					abort "Ooops!!nhmmer search returned no hits.." if Avail.check_blast_out("#{file}.list") == true
+
 	                #currentPath = Utility.navigate("Data")
 	                #puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
 						
@@ -145,6 +145,5 @@ class Querydb
 			err.backtrace.each { |l| $stderr.puts l + "\n" }
 			err	
 		end	
-	end
-
+	end	
 end	
