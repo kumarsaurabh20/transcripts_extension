@@ -1,4 +1,4 @@
-#Partial trainscripts extension
+#Partial transcripts extension
 This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two read databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript.
 
 ##Reads Database A
