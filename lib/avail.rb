@@ -108,4 +108,8 @@ module Avail
 			return true
 		end	
 	end	
+
+	def Avail.expunge(files=[])
+		FileUtils.rm files	
+	end	
 end	

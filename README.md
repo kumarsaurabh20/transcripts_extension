@@ -48,7 +48,8 @@ Follow the steps:
 
 `ruby init.rb -s partials.fasta -a blast -p <database_name>`
 
-NOTE: The database name should be same as in step 2.
+NOTE1: The database name should be same as in step 2.
+NOTE2: Neither absolute nor relative path should be used for -s flag. Keep the file in root folder.
 
 4> Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcript sequence.
 

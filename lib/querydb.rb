@@ -46,7 +46,18 @@ class Querydb
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing hits list..."
 					Avail.executeCmd(cmd)
 
-					abort "Ooops!!BLAST search returned no hits.." if Avail.check_blast_out("#{file}.list") == true
+					if Avail.check_blast_out("#{file}.list") == true
+						puts "#################################"	
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::#{file} BLAST search returned no hits!!"
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Aborting #{file}"
+						puts "#################################"
+						temps = ["#{file}.fasta","#{file}.out","#{file}.list"]
+						Avail.expunge(temps)
+						next
+					else 
+						count = `wc -l "#{file}.list"`.strip.split(' ')[0].to_i
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{count} reads were found related with #{file}"		
+					end	
 
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  moving temp files....!!"
 					Utility.createAndMoveFiles(file, "fasta", "Data")
@@ -112,8 +123,20 @@ class Querydb
 					puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Processing hits list..."
 					Avail.executeCmd(cmd)
 
-					abort "Ooops!!nhmmer search returned no hits.." if Avail.check_blast_out("#{file}.list") == true
-
+					#count = 0
+					#File.open(filename) {|f| count = f.read.count("\n")}	
+					if Avail.check_blast_out("#{file}.list") == true
+						puts "#################################"	
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  ERROR::#{file} NHMMER search returned no hits!!"
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  Aborting #{file}"
+						puts "#################################"
+						temps = ["#{file}.fasta","#{file}.out","#{file}.list"]
+						Avail.expunge(temps)
+						next
+					else 
+						count = `wc -l "#{file}.list"`.strip.split(' ')[0].to_i
+						puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{count} reads were found related with #{file}"		
+					end
 	                #currentPath = Utility.navigate("Data")
 	                #puts "[#{@step.strftime("%d%m%Y-%H:%M:%S")}]  #{currentPath}"
 						
