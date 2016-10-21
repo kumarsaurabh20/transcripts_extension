@@ -3,7 +3,6 @@
 require 'utility'
 require 'fileutils'
 require 'avail'
-require 'sequence'
 
 class CreateAndQueryDb
 
