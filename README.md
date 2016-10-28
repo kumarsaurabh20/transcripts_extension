@@ -17,7 +17,7 @@ The program will create a new DB folder with blast/nhmmer databases. The partial
 
 ##Usage
 
-Usage: ruby init.rb [options]
+`Usage: ruby init.rb [options]`
 
 Required options:
 -----------------
