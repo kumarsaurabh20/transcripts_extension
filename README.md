@@ -1,4 +1,4 @@
-#Partial transcripts extension
+##Partial transcripts extension
 This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two read databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript.
 
 ##Reads Database A
@@ -48,8 +48,10 @@ Follow the steps:
 
 `ruby init.rb -s partials.fasta -a blast -p <database_name>`
 
-NOTE1: The database name should be same as in step 2.
-NOTE2: Neither absolute nor relative path should be used with -s flag. Keep the file in root folder.
+##NOTE1: 
+The database name should be same as in step 2.
+##NOTE2: 
+Neither absolute nor relative path should be used with -s flag. Keep the file in root folder.
 
 4> Import the filtered R1 and R2 fastq/fasta files from the Data folder in to Geneious along with related partial transcript sequence.
 
