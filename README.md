@@ -7,6 +7,9 @@ Reads database A is just a reads repository as created by blast tool. If you are
 ## Reads Database B  
 Reads Database B is quality and length trimmed fastq files (R1 and R2). We keep the R1 and R2 file separate to effectively retrieve good quality reads using the hits obtained from BLAST/NHMMER searches. 
 
+## Extension Workflow
+![Extension_workflow](https://github.com/kumarsaurabh20/transcripts_extension/blob/master/simulations/images/extension.PNG)
+
 ## Dependencies  
 this program is dependent on 3 programs namely, blast command line tools, seqtk, sickle and an optional nhmmer tool.The whole workflow mainly depends on Geneious software for the reads mapping step.
 
