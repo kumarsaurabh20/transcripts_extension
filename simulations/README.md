@@ -37,3 +37,24 @@ python ./neat-genreads/genReads.py -r CYP9B2.fasta -R 100 -o two --pe 250 30 -c 
 cat two.read1.fastq >> one.read1.fastq
 cat two.read2.fastq >> two.read2.fastq
 ```
+
+## Results
+### CYP12C1
+![CYP12C1 partial](./images/cyp12c1_partial.PNG)
+![CYP12C1 targeted](./images/cyp12c1_targeted.PNG)
+
+### CYP4G1
+![CYP4G1 partial](./images/cyp4g1_partial.PNG)
+![CYP4G1 targeted](./images/cyp4g1_targeted.PNG)
+
+### CYP9B2
+![CYP9B2 partial](./images/cyp9b2_partial.PNG)
+![CYP9B2 targeted](./images/cyp9b2_targeted.PNG)
+
+### NOTE: For the CYP4G1 and CYP9B2 targeted results, I stopped at round 10. There was a possibility of further extension up to complete gene length.
+
+
+
+
+
+
