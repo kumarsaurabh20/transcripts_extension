@@ -11,14 +11,14 @@ CYP9B2 (NM_078922.4)
 ### Reads simulator
 https://github.com/zstephens/neat-genreads
 
-### Dataset 1
+### Dataset 1 (reads with average coverage of 50 through out gene)
 ```
 python ./neat-genreads/genReads.py -r CYP12C1.fasta -R 100 -o constant_cov --pe 250 30 -c 50
 python ./neat-genreads/genReads.py -r CYP4G1.fasta -R 100 -o constant_cov --pe 250 30 -c 50
 python ./neat-genreads/genReads.py -r CYP9B2.fasta -R 100 -o constant_cov --pe 250 30 -c 50
 
 ```
-### Dataset2
+### Dataset2 (reads with variable coverage. Sites were provided using a bed file)
 ```
 python ./neat-genreads/genReads.py -r CYP12C1.fasta -R 100 -o one --pe 250 30 -c 10
 python ./neat-genreads/genReads.py -r CYP12C1.fasta -R 100 -o two --pe 250 30 -c 100 -t cyp12c1.bed
