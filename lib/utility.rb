@@ -19,6 +19,12 @@ module Utility
 	# Check and set path to all the required tools and software
 	#Use prerequisite shell script
 	# find out if some programmes are not installed.
+	def Utility.checkCores
+		cmd="lscpu | grep '^CPU(s):' - | tr -s ' ' | cut -d' ' -f2"
+		return Avail.executeCmd(cmd)
+		exit	
+	end
+	
 	def Utility.checkAndSetTools
 		check = Prerequisite.new
 		check.checkTools
