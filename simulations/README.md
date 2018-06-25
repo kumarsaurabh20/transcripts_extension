@@ -37,6 +37,10 @@ python ./neat-genreads/genReads.py -r CYP9B2.fasta -R 100 -o two --pe 250 30 -c 
 cat two.read1.fastq >> one.read1.fastq
 cat two.read2.fastq >> two.read2.fastq
 ```
+### Extension workflow
+![extension_workflow](./images/extension.PNG)
+
+
 
 ## Results
 ### CYP12C1
