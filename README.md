@@ -4,10 +4,8 @@
 
 ## Abstract: 
 Many non-model organisms lack reference genomes and the sequencing and de novo assembly of an organism's transcriptome is an affordable means by which to characterize the coding component of its genome. Despite the advances that have made this possible, assembling a transcriptome without a known reference usually results in a collection of full-length and partial gene transcripts. The downstream analysis of genes represented as partial transcripts then often requires further experimental work in the laboratory in order to obtain full- length sequences. We have explored whether partial transcripts, encoding genes of interest present in de novo assembled transcriptomes of a model and non-model insect species, could be further extended by iterative mapping against the raw transcriptome sequencing reads. Partial sequences encoding cytochrome P450s and carboxyl/cholinesterase were used in this analysis because they are large multigene families and exhibit significant variation in expression. We present an effective method to improve the continuity of partial transcripts in silico that, in the absence of a reference genome, maybe a quick and cost-effective alternative to their extension by laboratory experimentation. Our approach resulted in the successful extension of incompletely assembled transcripts, often to full length. We experimentally validated these results \textit{in silico} and using real-time PCR and sequencing.
-keywords: {Genomics;Databases;Sequential analysis;RNA;Encoding;Insects;RNA Sequencing;RNASeq;Transcript extension;detoxification genes;de novo transcriptome assembly;Iterative read mapping},
 
 `URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8434319&isnumber=4359833`
-
 
 # Partial transcripts extension  
 This ruby based script is a  helper program (only for linux and mac based OS) to aid in partial transcripts extension workflow. It creates two read databases, database A (for sequence reads searcing) and database B (fetching mates of paired-end reads). To learn more about the concept behind reads databases, please go through the manuscript.
